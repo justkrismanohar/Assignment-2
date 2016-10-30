@@ -3,5 +3,13 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Created All Tables</h2>
-
+@{
+    if (ViewBag.message)
+    {
+        <h2>Created All Tables</h2>
+    }
+    else
+    {
+        <h2>Please wait 40s for azure's delete table commnad to execute</h2>
+    }
+}

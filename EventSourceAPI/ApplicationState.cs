@@ -235,5 +235,15 @@ namespace EventSourceAPI
             if (!localItems.TryGetValue(sku, out i)) throw new EventExceptions.ItemNotCreatedExpection();
             return i;
         }
+
+        public void resetAllViews()
+        {
+            itemStore.Clear();
+            prices.Clear();
+            sales.Clear();
+            dailySales.Clear();
+            monthlySales.Clear();
+            allsales.clearAllViews();
+        }
     }
 }

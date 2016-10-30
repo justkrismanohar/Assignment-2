@@ -6,9 +6,9 @@
 }
 
 <h2>Summary over all locations</h2>
-Total cost price : $ <p id="cp"> @ViewBag.totalCp</p> 
+Total cost price :<p id="cp"> $ @ViewBag.totalCp</p> 
 <br/>
-Total selling price : $ <p id="sp" > @ViewBag.totalSp </p>
+Total selling price:<p id="sp" > $ @ViewBag.totalSp </p>
 
 <table border="1">
 
@@ -47,8 +47,8 @@ Total selling price : $ <p id="sp" > @ViewBag.totalSp </p>
 
             chat.client.updateSummary = function (cp, sp) {
                 //Update summary information.
-                $('#cp').text(htmlEncode(cp));
-                $('#sp').text(htmlEncode(sp));
+                $('#cp').text("$ "+htmlEncode(cp));
+                $('#sp').text("$ "+htmlEncode(sp));
             };
 
             chat.client.updateItemSales = function (location, sku, quantity, cp, sp) {

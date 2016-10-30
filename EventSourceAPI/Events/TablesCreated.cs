@@ -12,6 +12,7 @@ namespace EventSourceAPI.Events
     {
         public override void execute(ApplicationState state)
         {
+           
             try
             {
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
@@ -26,7 +27,7 @@ namespace EventSourceAPI.Events
             }
             catch(Exception e)
             {
-
+                throw new EventExceptions.WaitForAuzreDeleteException();
             }
         }
     }

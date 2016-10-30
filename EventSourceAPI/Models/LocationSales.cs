@@ -43,5 +43,13 @@ namespace EventSourceAPI.Models
             if (!sales.TryGetValue(sku, out i)) throw new EventExceptions.ItemSalesNotCreatedException();
             return i;
         }
+
+        public void clearAllViews()
+        {
+            foreverCP = 0;
+            foreverSP = 0;
+            quantitySold = 0;
+            sales.Clear();
+        }
     }
 }

@@ -3,5 +3,27 @@
     ViewBag.Title = "Test Load";
 }
 
-<h2>Defualt items lodaed for @ViewBag.location </h2>
+
+@{
+    if (ViewBag.message)
+    {
+        <h2>Default items lodaed for @ViewBag.location </h2>
+    }
+    else
+    {
+        <br />
+        if (ViewBag.loaded)
+        {
+            <p>Items already loaded for @ViewBag.location</p>
+        }
+        else
+        {
+            <p>Please specify a valid location in the URL /Home/TestLoad/<b>yourlocation</b> </p>
+        }
+
+
+    }
+
+}
+
 

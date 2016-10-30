@@ -7,26 +7,33 @@
 }
 
 <h2>@ViewBag.location Daily Summary</h2>
+@{ 
+if (@ViewBag.message) {
+    <table border="1">
 
-<table border="1">
-
-    <tr>
-        <th>Item SKU</th>
-        <th>Quantity Sold</th>
-        <th>Total CP</th>
-        <th>Total SP</th>
-    </tr>
-
-    @foreach (ItemSalesInfo i in Model)
-    {
-        <tr id="@i.name">
-            <td>@i.name</td>
-            <td>@i.quantitySold</td>
-            <td>@i.foreverCP</td>
-            <td>@i.foreverSP</td>
+        <tr>
+            <th>Item SKU</th>
+            <th>Quantity Sold</th>
+            <th>Total CP</th>
+            <th>Total SP</th>
         </tr>
+
+        @foreach (ItemSalesInfo i in Model)
+        {
+            <tr id="@i.name">
+                <td>@i.name</td>
+                <td>@i.quantitySold</td>
+                <td>@i.foreverCP</td>
+                <td>@i.foreverSP</td>
+            </tr>
+        }
+    </table>
     }
-</table>
+    else
+    {
+        <p>Please specify a valid location in the URL /Home/DailySummary/<b>yourlocation</b> </p>
+    }
+}
 
 @section scripts {
     <!--Script references. -->

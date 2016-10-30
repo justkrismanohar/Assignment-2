@@ -16,6 +16,7 @@ namespace EventSourceAPI.Events
         public class LocalSalesNotCreatedException : Exception { }
         public class ItemSalesNotCreatedException : Exception { }
         public class ItemStoreNotCreatedException : Exception { }
-        
+        public class WaitForAuzreDeleteException : Exception { }
+
     }
 }

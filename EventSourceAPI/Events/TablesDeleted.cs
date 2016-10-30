@@ -14,6 +14,8 @@ namespace EventSourceAPI.Events
         {
             try
             {
+                state.resetAllViews();
+
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
                                 CloudConfigurationManager.GetSetting("StorageConnectionString"));
 
@@ -22,6 +24,7 @@ namespace EventSourceAPI.Events
 
                 table = tableClient.GetTableReference("EventLog");
                 table.DeleteIfExists();
+
             }
             catch (Exception e)
             {

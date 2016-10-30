@@ -3,5 +3,18 @@
     ViewBag.Title = "TestStock";
 }
 
-<h2>Added Stock to the @ViewBag.location store</h2>
+
+@{
+    if (ViewBag.message)
+    {
+        <h2>Added Stock to the @ViewBag.location store</h2>
+    }
+    else
+    {
+        <br/>
+        <p>Please specify a valid location in the URL /Home/TestStock/<b>yourlocation</b> </p>
+    }
+}
+
+
 

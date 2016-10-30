@@ -8,25 +8,35 @@
 
 <h2>@ViewBag.location Inventory</h2>
 
-
-<table border="1">
-
-    <tr>
-        <th>Item Name</th>
-        <th>SKU</th>
-        <th>In Stock</th>
-    </tr>
-
-    @foreach (ItemInfo i in Model)
+@{ 
+    if (ViewBag.message)
     {
-        <tr id="@i.sku">
-            <td>@i.name</td>
-            <td>@i.sku</td>
-            <td>@i.quantity</td>
-        </tr>
-    }
-</table>
+        
 
+
+        <table border="1">
+
+            <tr>
+                <th>Item Name</th>
+                <th>SKU</th>
+                <th>In Stock</th>
+            </tr>
+
+            @foreach (ItemInfo i in Model)
+            {
+                <tr id="@i.sku">
+                    <td>@i.name</td>
+                    <td>@i.sku</td>
+                    <td>@i.quantity</td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>Please specify a valid location in the URL /Home/Inventory/<b>yourlocation</b> </p>
+    }
+}
 
 @section scripts {
     <!--Script references. -->

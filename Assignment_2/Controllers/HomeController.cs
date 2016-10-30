@@ -32,16 +32,29 @@ namespace Assignment_2.Controllers
             ApplicationState state = await ApplicationState.getApplicationState();
             IEvent e = new TablesDeleted();
             e.execute(state);
+            var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+            context.Clients.All.updateItemSales("","",0,0);
             return View();
         }
 
         //Creates Event Log table
         public async Task<ActionResult> Create()
         {
-            ApplicationState state = await ApplicationState.getApplicationState();
-            IEvent e = new TablesCreated();
-            e.execute(state);
-            return View();
+            ViewBag.message = true;
+            try
+            {
+
+
+                ApplicationState state = await ApplicationState.getApplicationState();
+                IEvent e = new TablesCreated();
+                e.execute(state);
+                return View();
+            }
+            catch(Exception e)
+            {
+                ViewBag.message = false;
+                return View();
+            }
         }
 
         public async Task<ActionResult> Index()
@@ -64,7 +77,7 @@ namespace Assignment_2.Controllers
                 {
                     name = i.Key,
                     foreverCP = (double)i.Value.foreverCP,
-                    foreverSP = (double)i.Value.foreverCP,
+                    foreverSP = (double)i.Value.foreverSP,
                     quantitySold = i.Value.quantitySold
                 });
             };
@@ -74,49 +87,88 @@ namespace Assignment_2.Controllers
         //Inventory for a single location
         public async Task<ActionResult> Inventory(string id)
         {
-            string location = id;
-            ApplicationState state = await ApplicationState.getApplicationState();
-            List<Item> localItems = state.getItemStock(location);
-            List<ItemInfo> data = new List<ItemInfo>();
-            foreach (var i in localItems)
+            ViewBag.message = true;
+            if(id == null)
             {
-                data.Add(new ItemInfo()
+                ViewBag.message = false;
+                return View();
+            }
+            
+            try
+            {
+                string location = id;
+                ApplicationState state = await ApplicationState.getApplicationState();
+                List<Item> localItems = state.getItemStock(location);
+                List<ItemInfo> data = new List<ItemInfo>();
+                foreach (var i in localItems)
                 {
-                    name = i.name,
-                    quantity = i.quantity,
-                    sku = i.sku
-                });
-            };
+                    data.Add(new ItemInfo()
+                    {
+                        name = i.name,
+                        quantity = i.quantity,
+                        sku = i.sku
+                    });
+                };
 
-            ViewBag.location = location;
-            return View(data);
+                ViewBag.location = location;
+                return View(data);
+            }
+            catch(Exception e)
+            {
+                ViewBag.message = false;
+                return View();
+            }
         }
 
         //Summary for a single location
         public async Task<ActionResult> DailySummary(string id){
 
-            string location = id;
-            ApplicationState state = await ApplicationState.getApplicationState();
-            LocationSales localSales = state.getDailySalesForLocation(location);
-            List<ItemSalesInfo> data = new List<ItemSalesInfo>();
-            foreach(var i in localSales.sales)
+           
+            ViewBag.message = true;
+            if (id == null)
             {
-                data.Add(new ItemSalesInfo()
-                {
-                    name = i.Key,
-                    foreverCP = (double)i.Value.foreverCP,
-                    foreverSP = (double)i.Value.foreverCP,
-                    quantitySold = i.Value.quantitySold
-                });
-            };
+                ViewBag.message = false;
+                return View();
+            }
 
-            ViewBag.location = location;
-            return View(data);
+            try
+            {
+                string location = id;
+                ApplicationState state = await ApplicationState.getApplicationState();
+                LocationSales localSales = state.getDailySalesForLocation(location);
+                List<ItemSalesInfo> data = new List<ItemSalesInfo>();
+                foreach (var i in localSales.sales)
+                {
+                    data.Add(new ItemSalesInfo()
+                    {
+                        name = i.Key,
+                        foreverCP = (double)i.Value.foreverCP,
+                        foreverSP = (double)i.Value.foreverSP,
+                        quantitySold = i.Value.quantitySold
+                    });
+                };
+
+                ViewBag.location = location;
+                return View(data);
+            }
+            catch(Exception e)
+            {
+                ViewBag.message = false;
+                return View();
+            }
         }
  
         //Simulates placing an order at a location
         public async Task<ActionResult> TestOrder(string id)
         {
+
+            ViewBag.message = true;
+            if(id == null)
+            {
+                ViewBag.message = false;
+                return View();
+            }
+
             ViewBag.location = id;
 
             try
@@ -153,12 +205,14 @@ namespace Assignment_2.Controllers
 
 
                 context.Clients.All.updateSummary(state.getForeverCP(), state.getForeverSP());
+                return View();
             }
             catch(Exception e)
             {
-
+                ViewBag.message = false;
+                return View();
             }
-            return View();
+            
         }
 
         //Simuluates the population of inventory meta data
@@ -166,6 +220,15 @@ namespace Assignment_2.Controllers
         {
 
             ViewBag.location = id;
+            ViewBag.message = true;
+            ViewBag.loaded = false;
+
+            if(id == null)
+            {
+                ViewBag.message = false;
+                return View();
+            }
+
             try
             {
                 string location = id;
@@ -208,14 +271,17 @@ namespace Assignment_2.Controllers
 
                 PriceSetted fyzoCPrice = Helper.setPrice(state, system1, fyzoC.location, fyzoC.sku, 8.99, 10.99);
                 context.Clients.All.addNewMessageToPage("server", location + " set price " + fyzoCPrice.sku + " " + fyzoCPrice.cp + " " + fyzoCPrice.sp);
-
                
+                return View();
+
             }
             catch(Exception e)
             {
-
+                ViewBag.loaded = true;
+                ViewBag.message = false;
+                return View();
             }
-            return View();
+            
         }
 
         //Simulates adding items to the inventory
@@ -225,34 +291,50 @@ namespace Assignment_2.Controllers
             var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
             ApplicationState state = await ApplicationState.getApplicationState();
             ViewBag.location = id;
-            string location = id;
-            string bbsku = "Blue-Band";
-            string grsku = "Golden-Ray";
-            string kbsku = "Kiss-Bread";
-            string csku = "Crix";
+            ViewBag.message = true;
 
-            ItemStocked fyzoStockBB = Helper.stockItem(state, system1, location, bbsku, 10);
-            context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockBB.sku + " " + fyzoStockBB.n);
-            Item i = state.getItemStockFromLocation(location, bbsku);
-            context.Clients.All.updateItemStock(location,"Blue Band",bbsku,i.quantity);
+            if(id == null)
+            {
+                ViewBag.message = false;
+                return View();
+            }
 
-            ItemStocked fyzoStockGR = Helper.stockItem(state, system1, location, grsku, 100);
-            context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockGR.sku + " " + fyzoStockGR.n);
-            i = state.getItemStockFromLocation(location, grsku);
-            context.Clients.All.updateItemStock(location, "Golden Ray", grsku, i.quantity);
+            try
+            {
+                string location = id;
+                string bbsku = "Blue-Band";
+                string grsku = "Golden-Ray";
+                string kbsku = "Kiss-Bread";
+                string csku = "Crix";
 
-            ItemStocked fyzoStockKB = Helper.stockItem(state, system1, location, kbsku, 100);
-            context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockKB.sku + " " + fyzoStockKB.n);
-            i = state.getItemStockFromLocation(location, kbsku);
-            context.Clients.All.updateItemStock(location, "Kiss Bread", kbsku, i.quantity);
+                ItemStocked fyzoStockBB = Helper.stockItem(state, system1, location, bbsku, 10);
+                context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockBB.sku + " " + fyzoStockBB.n);
+                Item i = state.getItemStockFromLocation(location, bbsku);
+                context.Clients.All.updateItemStock(location, "Blue Band", bbsku, i.quantity);
 
-            ItemStocked fyzoStockC = Helper.stockItem(state, system1, location, csku, 100);
-            context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockC.sku + " " + fyzoStockC.n);
-            i = state.getItemStockFromLocation(location, csku);
-            context.Clients.All.updateItemStock(location, "Crix", csku, i.quantity);
+                ItemStocked fyzoStockGR = Helper.stockItem(state, system1, location, grsku, 100);
+                context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockGR.sku + " " + fyzoStockGR.n);
+                i = state.getItemStockFromLocation(location, grsku);
+                context.Clients.All.updateItemStock(location, "Golden Ray", grsku, i.quantity);
 
-            ViewBag.location = location;
-            return View();
+                ItemStocked fyzoStockKB = Helper.stockItem(state, system1, location, kbsku, 100);
+                context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockKB.sku + " " + fyzoStockKB.n);
+                i = state.getItemStockFromLocation(location, kbsku);
+                context.Clients.All.updateItemStock(location, "Kiss Bread", kbsku, i.quantity);
+
+                ItemStocked fyzoStockC = Helper.stockItem(state, system1, location, csku, 100);
+                context.Clients.All.addNewMessageToPage("server", "stocked " + fyzoStockC.sku + " " + fyzoStockC.n);
+                i = state.getItemStockFromLocation(location, csku);
+                context.Clients.All.updateItemStock(location, "Crix", csku, i.quantity);
+
+                ViewBag.location = location;
+                return View();
+            }
+            catch(Exception e)
+            {
+                ViewBag.message = false;
+                return View();
+            }
         }
         
         //Activity log
